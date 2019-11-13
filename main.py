@@ -24,7 +24,8 @@ def matplt_histogram(im, ax):
 
 
 def np_histogram(im):
-    hist, bin_edges = np.histogram(im, bins=51)
+    im = im.mean(axis=2).astype('uint8')
+    hist, bin_edges = np.histogram(im, bins=51, range=(0, 255))
     return hist
 
 
@@ -51,7 +52,7 @@ histograms_test = [np_histogram(im) for batch in [automobiles_test, deers_test, 
 
 fitted_labels = ['automobile' if idx < 30 else 'ship' if idx >= 60 else 'deer' for idx in
                  [np.argmin([euc_dist(test, hist) for hist in histograms]) for test in histograms_test]]
-err = (np.repeat(['automobile', 'deer', 'ship'], 10) == fitted_labels).sum() / 30
+err = (np.repeat(['automobile', 'deer', 'ship'], 10) != fitted_labels).sum() / 30
 print(f'Error: {err}%')
 
 # --- Plot if necessary ---
